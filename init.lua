@@ -23,7 +23,7 @@ vim.g.have_nerd_font = true
 vim.o.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.o.relativenumber = true
+vim.o.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.o.mouse = 'a'
@@ -1007,21 +1007,19 @@ require('lazy').setup({
   },
 
   {
-    'ggandor/leap.nvim',
-    enabled = true,
-    keys = {
-      { 's', mode = { 'n', 'x', 'o' }, desc = 'Leap Forward to' },
-      { 'S', mode = { 'n', 'x', 'o' }, desc = 'Leap Backward to' },
-      { 'gs', mode = { 'n', 'x', 'o' }, desc = 'Leap from Windows' },
-    },
-    config = function(_, opts)
-      local leap = require 'leap'
-      for k, v in pairs(opts) do
-        leap.opts[k] = v
-      end
-      leap.add_default_mappings(true)
-      vim.keymap.del({ 'x', 'o' }, 'x')
-      vim.keymap.del({ 'x', 'o' }, 'X')
+    'smoka7/hop.nvim',
+    version = '*',
+    config = function()
+      local hop = require 'hop'
+      hop.setup {
+        keys = 'etovxqpdygfblzhckisuran',
+        case_insensitive = false,
+        uppercase_labels = true,
+      }
+      local directions = require('hop.hint').HintDirection
+      vim.keymap.set('', 's', function()
+        hop.hint_words { direction = directions.AFTER_CURSOR, current_line_only = false }
+      end, { remap = true })
     end,
   },
 
