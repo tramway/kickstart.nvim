@@ -771,7 +771,7 @@ require('lazy').setup({
           return nil
         else
           return {
-            timeout_ms = 500,
+            timeout_ms = 1000,
             lsp_format = 'fallback',
           }
         end
@@ -779,6 +779,7 @@ require('lazy').setup({
       formatters_by_ft = {
         lua = { 'stylua' },
         htmlangular = { 'prettier' },
+        html = { 'prettier' },
         angular = { 'prettier' },
         typescript = { 'prettier', 'eslint_d' },
         -- Conform can also run multiple formatters sequentially
@@ -986,7 +987,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = { 'angular', 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -1018,7 +1019,7 @@ require('lazy').setup({
       }
       local directions = require('hop.hint').HintDirection
       vim.keymap.set('', 's', function()
-        hop.hint_words { direction = directions.AFTER_CURSOR, current_line_only = false }
+        hop.hint_words {}
       end, { remap = true })
     end,
   },
