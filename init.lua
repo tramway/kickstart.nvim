@@ -330,6 +330,7 @@ require('lazy').setup({
           --   mappings = {
           --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
           --   },
+          file_ignore_patterns = { 'node_modules', '.git' },
           path_display = {
             filename_first = {
               reverse_directories = true,
@@ -411,6 +412,13 @@ require('lazy').setup({
       },
     },
   },
+
+  {
+    'pmizio/typescript-tools.nvim',
+    dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' },
+    opts = {},
+  },
+
   {
     -- Main LSP Configuration
     'neovim/nvim-lspconfig',
@@ -639,44 +647,57 @@ require('lazy').setup({
           },
         },
 
-        -- NOTE: Dont forget to `npm i -g @vtsls/language-server`
-        vtsls = {
-          settings = {
-            typescript = {
-              preferences = {
-                importModuleSpecifier = 'project-relative',
-                importModuleSpecifierPreference = 'relative',
-                importModuleSpecifierEnding = 'minimal',
-              },
-              inlayHints = {
-                parameterNames = { enabled = 'all' },
-                parameterTypes = { enabled = true },
-                variableTypes = { enabled = true },
-                propertyDeclarationTypes = { enabled = true },
-                functionLikeReturnTypes = { enabled = true },
-                enumMemberValues = { enabled = true },
-              },
-            },
-          },
-        },
+        -- -- NOTE: Dont forget to `npm i -g @vtsls/language-server`
+        -- vtsls = {
+        --   settings = {
+        --     typescript = {
+        --       preferences = {
+        --         importModuleSpecifier = 'project-relative',
+        --         importModuleSpecifierPreference = 'relative',
+        --         importModuleSpecifierEnding = 'minimal',
+        --       },
+        --       inlayHints = {
+        --         parameterNames = { enabled = 'all' },
+        --         parameterTypes = { enabled = true },
+        --         variableTypes = { enabled = true },
+        --         propertyDeclarationTypes = { enabled = true },
+        --         functionLikeReturnTypes = { enabled = true },
+        --         enumMemberValues = { enabled = true },
+        --       },
+        --     },
+        --   },
+        -- },
 
         -- NOTE: Dont forget to `npm i -g @angular/language-server`
         angularls = {
           capabilities = lsp_capabilities,
           filetypes = { 'typescript', 'html', 'angular', 'htmlangular' },
-          root_dir = function(fname)
-            return require('lspconfig.util').root_pattern('angular.json', 'workspace.json', 'nx.json', 'package.json', 'tsconfig.base.json', 'project.json')(
-              fname
-            )
-          end,
+          -- root_dir = function(fname)
+          --   return require('lspconfig.util').root_pattern('angular.json', 'workspace.json', 'nx.json', 'package.json', 'tsconfig.base.json', 'project.json')(
+          --     fname
+          --   )
+          -- end,
+          root_markers = { 'angular.json', 'nx.json' },
           on_new_config = function(new_config, new_root_dir)
+            -- new_config.cmd = {
+            --   'ngserver',
+            --   '--stdio',
+            --   '--tsProbeLocations',
+            --   new_root_dir,
+            --   '--ngProbeLocations',
+            --   new_root_dir,
+            -- }
             new_config.cmd = {
-              'ngserver',
-              '--stdio',
-              '--tsProbeLocations',
-              new_root_dir,
-              '--ngProbeLocations',
-              new_root_dir,
+              {
+                'ngserver',
+                '--stdio',
+                '--tsProbeLocations',
+                '../..,?/node_modules',
+                '--ngProbeLocations',
+                '../../@angular/language-server/node_modules,?/node_modules/@angular/language-server/node_modules',
+                '--angularCoreVersion',
+                '',
+              },
             }
           end,
         },
@@ -996,7 +1017,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'angular', 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = { 'angular', 'scss', 'css', 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -1008,6 +1029,14 @@ require('lazy').setup({
       },
       indent = { enable = true, disable = { 'ruby' } },
     },
+    setup = function()
+      vim.api.nvim_create_autocmd({ 'BufReadPost', 'BufNewFile' }, {
+        pattern = { '*.component.html' },
+        callback = function()
+          vim.treesitter.start(nil, 'angular')
+        end,
+      })
+    end,
     -- There are additional nvim-treesitter modules that you can use to interact
     -- with nvim-treesitter. You should go explore a few and see what interests you:
     --
