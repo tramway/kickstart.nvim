@@ -5,8 +5,6 @@
     If you experience any errors while trying to install kickstart, run `:checkhealth` for more info.
 --]]
 
--- Set <space> as the leader key
--- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
@@ -19,49 +17,26 @@ vim.g.have_nerd_font = true
 -- NOTE: You can change these options as you wish!
 --  For more options, you can see `:help option-list`
 
--- Make line numbers default
 vim.o.number = true
--- You can also add relative line numbers, to help with jumping.
---  Experiment for yourself to see if you like it!
 vim.o.relativenumber = true
-
--- Enable mouse mode, can be useful for resizing splits for example!
 vim.o.mouse = 'a'
-
--- Don't show the mode, since it's already in the status line
 vim.o.showmode = false
 
 -- Sync clipboard between OS and Neovim.
 --  Schedule the setting after `UiEnter` because it can increase startup-time.
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`
-vim.schedule(function()
-  vim.o.clipboard = 'unnamedplus'
-end)
+vim.schedule(function() vim.o.clipboard = 'unnamedplus' end)
 
--- Enable break indent
 vim.o.breakindent = true
-
--- Save undo history
 vim.o.undofile = true
-
--- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
 vim.o.ignorecase = true
 vim.o.smartcase = true
-
--- Keep signcolumn on by default
 vim.o.signcolumn = 'yes'
-
--- Decrease update time
 vim.o.updatetime = 250
-
--- Decrease mapped sequence wait time
 vim.o.timeoutlen = 300
-
--- Configure how new splits should be opened
 vim.o.splitright = true
 vim.o.splitbelow = true
-
 -- Sets how neovim will display certain whitespace characters in the editor.
 --  See `:help 'list'`
 --  and `:help 'listchars'`
@@ -75,11 +50,7 @@ vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
 -- Preview substitutions live, as you type!
 vim.o.inccommand = 'split'
-
--- Show which line your cursor is on
 vim.o.cursorline = true
-
--- Minimal number of screen lines to keep above and below the cursor.
 vim.o.scrolloff = 10
 
 -- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
@@ -90,7 +61,6 @@ vim.o.confirm = true
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 vim.keymap.set('n', '<leader>Q', '<cmd>qa<cr>', { desc = 'Quit All' })
-
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
@@ -99,18 +69,12 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
--- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
+-- for people to discover. Otherwise, you normally need to press <C-\><C-n>, ehich
 -- is not what someone will guess without a bit more experience.
 --
 -- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
 -- or just use <C-\><C-n> to exit terminal mode
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
-
--- TIP: Disable arrow keys in normal mode
--- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
--- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
--- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
--- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
@@ -140,9 +104,7 @@ vim.keymap.set('n', '<leader>mr', '<cmd>LspRestart<cr>', { desc = 'Restart LSP' 
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
-  callback = function()
-    vim.hl.on_yank()
-  end,
+  callback = function() vim.hl.on_yank() end,
 })
 
 -- [[ Install `lazy.nvim` plugin manager ]]
@@ -151,9 +113,7 @@ local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
   local lazyrepo = 'https://github.com/folke/lazy.nvim.git'
   local out = vim.fn.system { 'git', 'clone', '--filter=blob:none', '--branch=stable', lazyrepo, lazypath }
-  if vim.v.shell_error ~= 0 then
-    error('Error cloning lazy.nvim:\n' .. out)
-  end
+  if vim.v.shell_error ~= 0 then error('Error cloning lazy.nvim:\n' .. out) end
 end
 
 ---@type vim.Option
@@ -162,9 +122,7 @@ rtp:prepend(lazypath)
 
 --    :Lazy
 --    :Lazy update
--- NOTE: Here is where you install your plugins.
 require('lazy').setup({
-  -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
 
   -- NOTE: Plugins can also be added by using a table,
@@ -220,8 +178,7 @@ require('lazy').setup({
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
     opts = {
-      -- delay between pressing a key and opening which-key (milliseconds)
-      -- this setting is independent of vim.o.timeoutlen
+      preset = 'helix',
       delay = 200,
       icons = {
         -- set icon mappings to true if you have a Nerd Font
@@ -269,6 +226,7 @@ require('lazy').setup({
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
         { '<leader>m', group = '[M]isc' },
         { '<leader>u', group = '[U]I' },
+        { '<leader>r', group = '[R]efactor' },
       },
     },
   },
@@ -294,9 +252,7 @@ require('lazy').setup({
 
         -- `cond` is a condition used to determine whether this plugin should be
         -- installed and loaded.
-        cond = function()
-          return vim.fn.executable 'make' == 1
-        end,
+        cond = function() return vim.fn.executable 'make' == 1 end,
       },
       { 'nvim-telescope/telescope-ui-select.nvim' },
     },
@@ -342,9 +298,7 @@ require('lazy').setup({
             hidden = true,
           },
           live_grep = {
-            additional_args = function()
-              return { '--hidden' }
-            end,
+            additional_args = function() return { '--hidden' } end,
           },
         },
         extensions = {
@@ -369,9 +323,12 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
-      vim.keymap.set('n', '<leader>s.', function()
-        builtin.oldfiles { only_cwd = true }
-      end, { desc = '[S]earch Recent Files ("." for repeat)' })
+      vim.keymap.set(
+        'n',
+        '<leader>s.',
+        function() builtin.oldfiles { only_cwd = true } end,
+        { desc = '[S]earch Recent Files ("." for repeat)' }
+      )
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
 
       -- Slightly advanced example of overriding default behavior and theme
@@ -385,17 +342,25 @@ require('lazy').setup({
 
       -- It's also possible to pass additional configuration options.
       --  See `:help telescope.builtin.live_grep()` for information about particular keys
-      vim.keymap.set('n', '<leader>s/', function()
-        builtin.live_grep {
-          grep_open_files = true,
-          prompt_title = 'Live Grep in Open Files',
-        }
-      end, { desc = '[S]earch [/] in Open Files' })
+      vim.keymap.set(
+        'n',
+        '<leader>s/',
+        function()
+          builtin.live_grep {
+            grep_open_files = true,
+            prompt_title = 'Live Grep in Open Files',
+          }
+        end,
+        { desc = '[S]earch [/] in Open Files' }
+      )
 
       -- Shortcut for searching your Neovim configuration files
-      vim.keymap.set('n', '<leader>sn', function()
-        builtin.find_files { cwd = vim.fn.stdpath 'config' }
-      end, { desc = '[S]earch [N]eovim files' })
+      vim.keymap.set(
+        'n',
+        '<leader>sn',
+        function() builtin.find_files { cwd = vim.fn.stdpath 'config' } end,
+        { desc = '[S]earch [N]eovim files' }
+      )
     end,
   },
 
@@ -437,6 +402,7 @@ require('lazy').setup({
       'saghen/blink.cmp',
     },
     config = function()
+      vim.lsp.enable 'angularls'
       -- Brief aside: **What is LSP?**
       --
       -- LSP is an initialism you've probably heard, but might not understand what it is.
@@ -536,7 +502,10 @@ require('lazy').setup({
           --
           -- When you move your cursor, the highlights will be cleared (the second autocommand).
           local client = vim.lsp.get_client_by_id(event.data.client_id)
-          if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf) then
+          if
+            client
+            and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf)
+          then
             local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
             vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
               buffer = event.buf,
@@ -564,9 +533,11 @@ require('lazy').setup({
           --
           -- This may be unwanted, since they displace some of your code
           if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
-            map('<leader>th', function()
-              vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
-            end, '[T]oggle Inlay [H]ints')
+            map(
+              '<leader>th',
+              function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf }) end,
+              '[T]oggle Inlay [H]ints'
+            )
           end
         end,
       })
@@ -645,61 +616,6 @@ require('lazy').setup({
               -- diagnostics = { disable = { 'missing-fields' } },
             },
           },
-        },
-
-        -- -- NOTE: Dont forget to `npm i -g @vtsls/language-server`
-        -- vtsls = {
-        --   settings = {
-        --     typescript = {
-        --       preferences = {
-        --         importModuleSpecifier = 'project-relative',
-        --         importModuleSpecifierPreference = 'relative',
-        --         importModuleSpecifierEnding = 'minimal',
-        --       },
-        --       inlayHints = {
-        --         parameterNames = { enabled = 'all' },
-        --         parameterTypes = { enabled = true },
-        --         variableTypes = { enabled = true },
-        --         propertyDeclarationTypes = { enabled = true },
-        --         functionLikeReturnTypes = { enabled = true },
-        --         enumMemberValues = { enabled = true },
-        --       },
-        --     },
-        --   },
-        -- },
-
-        -- NOTE: Dont forget to `npm i -g @angular/language-server`
-        angularls = {
-          capabilities = lsp_capabilities,
-          filetypes = { 'typescript', 'html', 'angular', 'htmlangular' },
-          -- root_dir = function(fname)
-          --   return require('lspconfig.util').root_pattern('angular.json', 'workspace.json', 'nx.json', 'package.json', 'tsconfig.base.json', 'project.json')(
-          --     fname
-          --   )
-          -- end,
-          root_markers = { 'angular.json', 'nx.json' },
-          on_new_config = function(new_config, new_root_dir)
-            -- new_config.cmd = {
-            --   'ngserver',
-            --   '--stdio',
-            --   '--tsProbeLocations',
-            --   new_root_dir,
-            --   '--ngProbeLocations',
-            --   new_root_dir,
-            -- }
-            new_config.cmd = {
-              {
-                'ngserver',
-                '--stdio',
-                '--tsProbeLocations',
-                '../..,?/node_modules',
-                '--ngProbeLocations',
-                '../../@angular/language-server/node_modules,?/node_modules/@angular/language-server/node_modules',
-                '--angularCoreVersion',
-                '',
-              },
-            }
-          end,
         },
 
         -- NOTE: Dont forget to `npm i -g vscode-langservers-extracted`
@@ -783,9 +699,7 @@ require('lazy').setup({
     keys = {
       {
         '<leader>f',
-        function()
-          require('conform').format { async = true, lsp_format = 'fallback' }
-        end,
+        function() require('conform').format { async = true, lsp_format = 'fallback' } end,
         mode = '',
         desc = '[F]ormat buffer',
       },
@@ -812,9 +726,6 @@ require('lazy').setup({
         html = { 'prettier' },
         angular = { 'prettier' },
         typescript = { 'prettier', 'eslint_d' },
-        -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
-        --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
       },
@@ -834,9 +745,7 @@ require('lazy').setup({
           -- Build Step is needed for regex support in snippets.
           -- This step is not supported in many windows environments.
           -- Remove the below condition to re-enable on windows.
-          if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then
-            return
-          end
+          if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then return end
           return 'make install_jsregexp'
         end)(),
         dependencies = {
@@ -944,7 +853,12 @@ require('lazy').setup({
   },
 
   -- Highlight todo, notes, etc in comments
-  { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
+  {
+    'folke/todo-comments.nvim',
+    event = 'VimEnter',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    opts = { signs = false },
+  },
 
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
@@ -975,9 +889,7 @@ require('lazy').setup({
       -- default behavior. For example, here we set the section for
       -- cursor location to LINE:COLUMN
       ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_location = function()
-        return '%2l:%-2v'
-      end
+      statusline.section_location = function() return '%2l:%-2v' end
 
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
@@ -1017,7 +929,22 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'angular', 'scss', 'css', 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = {
+        'angular',
+        'scss',
+        'css',
+        'bash',
+        'c',
+        'diff',
+        'html',
+        'lua',
+        'luadoc',
+        'markdown',
+        'markdown_inline',
+        'query',
+        'vim',
+        'vimdoc',
+      },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -1032,9 +959,7 @@ require('lazy').setup({
     setup = function()
       vim.api.nvim_create_autocmd({ 'BufReadPost', 'BufNewFile' }, {
         pattern = { '*.component.html' },
-        callback = function()
-          vim.treesitter.start(nil, 'angular')
-        end,
+        callback = function() vim.treesitter.start(nil, 'angular') end,
       })
     end,
     -- There are additional nvim-treesitter modules that you can use to interact
@@ -1056,9 +981,7 @@ require('lazy').setup({
         uppercase_labels = true,
       }
       local directions = require('hop.hint').HintDirection
-      vim.keymap.set('', 's', function()
-        hop.hint_words {}
-      end, { remap = true })
+      vim.keymap.set('', 's', function() hop.hint_words {} end, { remap = true })
     end,
   },
 
@@ -1107,6 +1030,9 @@ require('lazy').setup({
     opts = {},
     keys = {
       { '<leader>-', '<cmd>Oil --float<CR>', desc = 'Oil' },
+    },
+    keymaps = {
+      ['<Esc>'] = { 'actions.close', mode = 'n' },
     },
     -- Optional dependencies
     dependencies = { { 'echasnovski/mini.icons', opts = {} } },
@@ -1159,15 +1085,119 @@ require('lazy').setup({
     },
   },
 
-  -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
-  -- init.lua. If you want these files, they are in the repository, so you can just download them and
-  -- place them in the correct locations.
+  {
+    'ThePrimeagen/refactoring.nvim',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'nvim-treesitter/nvim-treesitter',
+    },
+    lazy = false,
+    opts = {
+      prompt_func_return_type = {
+        go = false,
+        java = true,
+        cpp = false,
+        c = false,
+        h = false,
+        hpp = false,
+        cxx = false,
+      },
+      prompt_func_param_type = {
+        go = false,
+        java = true,
+        cpp = false,
+        c = false,
+        h = false,
+        hpp = false,
+        cxx = false,
+      },
+      printf_statements = {},
+      print_var_statements = {},
+      show_success_message = true, -- shows a message with information about the refactor on success
+      -- i.e. [Refactor] Inlined 3 variable occurrences
+    },
+    config = function()
+      local refactoring = require 'refactoring'
+      vim.keymap.set(
+        { 'n', 'x' },
+        '<leader>re',
+        function() return require('refactoring').refactor 'Extract Function' end,
+        { expr = true, desc = 'Extract Function' }
+      )
+      vim.keymap.set(
+        { 'n', 'x' },
+        '<leader>rf',
+        function() return require('refactoring').refactor 'Extract Function To File' end,
+        { expr = true, desc = 'Extract Function To File' }
+      )
+      vim.keymap.set(
+        { 'n', 'x' },
+        '<leader>rv',
+        function() return require('refactoring').refactor 'Extract Variable' end,
+        { expr = true, desc = 'Extract Variable' }
+      )
+      vim.keymap.set(
+        { 'n', 'x' },
+        '<leader>rI',
+        function() return require('refactoring').refactor 'Inline Function' end,
+        { expr = true, desc = 'Inline Function' }
+      )
+      vim.keymap.set(
+        { 'n', 'x' },
+        '<leader>ri',
+        function() return require('refactoring').refactor 'Inline Variable' end,
+        { expr = true, desc = 'Inline Variable' }
+      )
+      vim.keymap.set(
+        { 'n', 'x' },
+        '<leader>rbb',
+        function() return require('refactoring').refactor 'Extract Block' end,
+        { expr = true, desc = 'Extract Block' }
+      )
+      vim.keymap.set(
+        { 'n', 'x' },
+        '<leader>rbf',
+        function() return require('refactoring').refactor 'Extract Block To File' end,
+        { expr = true, desc = 'Extract Block To File' }
+      )
+      -- You can also use below = true here to to change the position of the printf
+      -- statement (or set two remaps for either one). This remap must be made in normal mode.
+      vim.keymap.set(
+        'n',
+        '<leader>rp',
+        function() require('refactoring').debug.printf { below = false } end,
+        { desc = 'Log' }
+      )
+      vim.keymap.set(
+        { 'x', 'n' },
+        '<leader>rv',
+        function() require('refactoring').debug.print_var() end,
+        { desc = 'Log var' }
+      )
+      -- Supports both visual and normal mode
+      vim.keymap.set(
+        'n',
+        '<leader>rc',
+        function() require('refactoring').debug.cleanup {} end,
+        { desc = 'Log Cleanup' }
+      )
+      -- Supports only normal mode
+    end,
+  },
+
+  {
+    'chrisgrieser/nvim-origami',
+    event = 'VeryLazy',
+    opts = {}, -- needed even when using default config
+
+    -- recommended: disable vim's auto-folding
+    init = function()
+      vim.opt.foldlevel = 99
+      vim.opt.foldlevelstart = 99
+    end,
+  },
 
   -- NOTE: Next step on your Neovim journey: Add/Configure additional plugins for Kickstart
-  --
-  --  Here are some example plugins that I've included in the Kickstart repository.
-  --  Uncomment any of the lines below to enable them (you will need to restart nvim).
-  --
   require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
