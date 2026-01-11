@@ -2,7 +2,7 @@
     - Lua 15 mins guide  - https://learnxinyminutes.com/docs/lua/
     - :help lua-guide
 
-    If you experience any errors while trying to install kickstart, run `:checkhealth` for more info.
+    If you experence any errors while trying to install kickstart, run `:checkhealth` for more info.
 --]]
 
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
@@ -34,7 +34,7 @@ vim.o.ignorecase = true
 vim.o.smartcase = true
 vim.o.signcolumn = 'yes'
 vim.o.updatetime = 250
-vim.o.timeoutlen = 300
+vim.o.timeoutlen = 150
 vim.o.splitright = true
 vim.o.splitbelow = true
 -- Sets how neovim will display certain whitespace characters in the editor.
@@ -379,6 +379,14 @@ require('lazy').setup({
   },
 
   {
+    'nvim-java/nvim-java',
+    config = function()
+      require('java').setup()
+      vim.lsp.enable 'jdtls'
+    end,
+  },
+
+  {
     'pmizio/typescript-tools.nvim',
     dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' },
     opts = {},
@@ -705,6 +713,7 @@ require('lazy').setup({
       },
     },
     opts = {
+      log_level = vim.log.levels.DEBUG,
       notify_on_error = false,
       format_on_save = function(bufnr)
         -- Disable "format_on_save lsp_fallback" for languages that don't
@@ -1185,6 +1194,8 @@ require('lazy').setup({
     end,
   },
 
+  { 'LunarVim/bigfile.nvim' },
+
   {
     'chrisgrieser/nvim-origami',
     event = 'VeryLazy',
@@ -1196,6 +1207,10 @@ require('lazy').setup({
       vim.opt.foldlevelstart = 99
     end,
   },
+
+  -- TODO: Test this one
+  -- Prettier QF window
+  -- { 'kevinhwang91/nvim-bqf', ft = 'qf' },
 
   -- NOTE: Next step on your Neovim journey: Add/Configure additional plugins for Kickstart
   require 'kickstart.plugins.debug',
