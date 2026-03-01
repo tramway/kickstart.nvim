@@ -712,33 +712,51 @@ require('lazy').setup({
         desc = '[F]ormat buffer',
       },
     },
-    opts = {
-      log_level = vim.log.levels.DEBUG,
-      notify_on_error = false,
-      format_on_save = function(bufnr)
-        -- Disable "format_on_save lsp_fallback" for languages that don't
-        -- have a well standardized coding style. You can add additional
-        -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
-        if disable_filetypes[vim.bo[bufnr].filetype] then
-          return nil
-        else
-          return {
-            timeout_ms = 1000,
-            lsp_format = 'fallback',
-          }
-        end
-      end,
-      formatters_by_ft = {
-        lua = { 'stylua' },
-        htmlangular = { 'prettier' },
-        html = { 'prettier' },
-        angular = { 'prettier' },
-        typescript = { 'prettier', 'eslint_d' },
-        -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
-      },
-    },
+    config = function()
+      require('conform').setup {
+        log_level = vim.log.levels.DEBUG,
+        notify_on_error = true,
+        format_after_save = function(bufnr)
+          -- Disable "format_on_save lsp_fallback" for languages that don't
+          -- have a well standardized coding style. You can add additional
+          -- languages here or re-enable it for the disabled ones.
+          local disable_filetypes = { c = true, cpp = true }
+          if disable_filetypes[vim.bo[bufnr].filetype] then
+            return nil
+          else
+            return {
+              timeout_ms = 1000,
+              lsp_format = 'fallback',
+            }
+          end
+        end,
+        formatters_by_ft = {
+          lua = { 'stylua' },
+          htmlangular = { 'prettier' },
+          html = { 'prettier' },
+          angular = { 'prettier' },
+          typescript = { 'prettier', 'eslint_d' },
+          -- You can use 'stop_after_first' to run the first available formatter from the list
+          -- javascript = { "prettierd", "prettier", stop_after_first = true },
+        },
+      }
+      require('conform').formatters.eslint_d = function()
+        local util = require 'conform.util'
+        ---@type conform.FileFormatterConfig
+
+        return {
+          meta = {
+            url = 'https://github.com/mantoni/eslint_d.js/',
+            description = 'Like ESLint, but faster.',
+          },
+          command = util.from_node_modules 'eslint_d',
+          args = { '--fix-to-stdout', '--stdin', '--stdin-filename', '$FILENAME' },
+          cwd = util.root_file {
+            'package.json',
+          },
+        }
+      end
+    end,
   },
 
   { -- Autocompletion
@@ -866,7 +884,23 @@ require('lazy').setup({
     'folke/todo-comments.nvim',
     event = 'VimEnter',
     dependencies = { 'nvim-lua/plenary.nvim' },
-    opts = { signs = false },
+    opts = {
+      signs = false,
+      keywords = {
+        FIX = {
+          icon = ' ', -- icon used for the sign, and in search results
+          color = 'error', -- can be a hex color, or a named color (see below)
+          alt = { 'FIXME', 'BUG', 'FIXIT', 'ISSUE', 'fix' }, -- a set of other keywords that all map to this FIX keywords
+          -- signs = false, -- configure signs for some keywords individually
+        },
+        TODO = { icon = ' ', color = 'info', alt = { 'todo' } },
+        HACK = { icon = ' ', color = 'warning', alt = { 'hack' } },
+        WARN = { icon = ' ', color = 'warning', alt = { 'WARNING', 'XXX', 'warn' } },
+        PERF = { icon = ' ', alt = { 'OPTIM', 'PERFORMANCE', 'OPTIMIZE', 'perf' } },
+        NOTE = { icon = ' ', color = 'hint', alt = { 'INFO', 'info' } },
+        TEST = { icon = '⏲ ', color = 'test', alt = { 'TESTING', 'PASSED', 'FAILED', 'test' } },
+      },
+    },
   },
 
   { -- Collection of various small independent plugins/modules
@@ -885,7 +919,19 @@ require('lazy').setup({
       -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
-      require('mini.surround').setup()
+      require('mini.surround').setup {
+        mappings = {
+          add = 'C-sa', -- Add surrounding in Normal and Visual modes
+          delete = 'C-sd', -- Delete surrounding
+          find = 'C-sf', -- Find surrounding (to the right)
+          find_left = 'C-sF', -- Find surrounding (to the left)
+          highlight = 'C-sh', -- Highlight surrounding
+          replace = 'C-sr', -- Replace surrounding
+
+          suffix_last = 'l', -- Suffix to search with "prev" method
+          suffix_next = 'n', -- Suffix to search with "next" method
+        },
+      }
 
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
@@ -920,6 +966,29 @@ require('lazy').setup({
 
       require('telescope').load_extension 'lazygit'
     end,
+  },
+  {
+    'NeogitOrg/neogit',
+    lazy = true,
+    dependencies = {
+      'nvim-lua/plenary.nvim', -- required
+      'sindrets/diffview.nvim', -- optional - Diff integration
+
+      -- Only one of these is needed.
+      'nvim-telescope/telescope.nvim', -- optional
+      -- "ibhagwan/fzf-lua",              -- optional
+      -- "nvim-mini/mini.pick",           -- optional
+      'folke/snacks.nvim', -- optional
+    },
+    cmd = 'Neogit',
+    keys = {
+      { '<leader>gn', '<cmd>Neogit<cr>', desc = 'Show Neogit UI' },
+    },
+    opts = { -- Disable line numbers
+      disable_line_numbers = false,
+      -- Disable relative line numbers
+      disable_relative_line_numbers = false,
+    },
   },
 
   {
@@ -1196,16 +1265,15 @@ require('lazy').setup({
 
   { 'LunarVim/bigfile.nvim' },
 
-  {
-    'chrisgrieser/nvim-origami',
-    event = 'VeryLazy',
-    opts = {}, -- needed even when using default config
-
-    -- recommended: disable vim's auto-folding
-    init = function()
-      vim.opt.foldlevel = 99
-      vim.opt.foldlevelstart = 99
-    end,
+  { -- Copilot
+    'CopilotC-Nvim/CopilotChat.nvim',
+    dependencies = {
+      { 'nvim-lua/plenary.nvim', branch = 'master' },
+    },
+    build = 'make tiktoken',
+    opts = {
+      -- See Configuration section for options
+    },
   },
 
   -- TODO: Test this one
@@ -1215,7 +1283,7 @@ require('lazy').setup({
   -- NOTE: Next step on your Neovim journey: Add/Configure additional plugins for Kickstart
   require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
-  -- require 'kickstart.plugins.lint',
+  require 'kickstart.plugins.lint',
   require 'kickstart.plugins.autopairs',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
