@@ -1,10 +1,3 @@
---[[
-    - Lua 15 mins guide  - https://learnxinyminutes.com/docs/lua/
-    - :help lua-guide
-
-    If you experence any errors while trying to install kickstart, run `:checkhealth` for more info.
---]]
-
 -- ============================================================
 -- SECTION 1: FOUNDATION
 -- Core Neovim settings, leaders, options, basic keymaps, basic autocmds
@@ -13,19 +6,14 @@ do
   -- Enable faster startup by caching compiled Lua modules
   vim.loader.enable()
 
-  -- Set <space> as the leader key
-  -- See `:help mapleader`
   --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
   vim.g.mapleader = ' '
   vim.g.maplocalleader = ' '
 
-  -- Set to true if you have a Nerd Font installed and selected in the terminal
   vim.g.have_nerd_font = true
 
   -- [[ Setting options ]]
-  -- See `:help vim.o`
-  -- NOTE: You can change these options as you wish!
-  --  For more options, you can see `:help option-list`
+  --  NOTE: See `:help vim.o` You can change these options as you wish! For more options, you can see `:help option-list`
 
   vim.o.number = true
   vim.o.relativenumber = true
@@ -34,8 +22,6 @@ do
 
   -- Sync clipboard between OS and Neovim.
   --  Schedule the setting after `UiEnter` because it can increase startup-time.
-  --  Remove this option if you want your OS clipboard to remain independent.
-  --  See `:help 'clipboard'`
   vim.schedule(function() vim.o.clipboard = 'unnamedplus' end)
 
   vim.o.breakindent = true
@@ -109,24 +95,11 @@ do
   -- or just use <C-\><C-n> to exit terminal mode
   vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
-  -- Keybinds to make split navigation easier.
-  --  Use CTRL+<hjkl> to switch between windows
-  --
   --  See `:help wincmd` for a list of all window commands
   vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
   vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
   vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
   vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
-
-  -- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
-  -- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
-  -- vim.keymap.set("n", "<C-S-l>", "<C-w>L", { desc = "Move window to the right" })
-  -- vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
-  -- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
-
-  -- Lazy keymaps
-  vim.keymap.set('n', '<leader>ml', '<cmd>Lazy<cr>', { desc = 'Lazy' })
-  vim.keymap.set('n', '<leader>mr', '<cmd>LspRestart<cr>', { desc = 'Restart LSP' })
 
   -- [[ Basic Autocommands ]]
   --  See `:help lua-guide-autocommands`
@@ -1007,18 +980,20 @@ do
       -- startVisible = true,
       -- showBlankVirtLine = true,
       -- highlightColor = { link = 'Comment' },
-      -- hints = {
-      --   Caret = { text = '^', prio = 2 },
-      --   Dollar = { text = '$', prio = 1 },
-      --   MatchingPair = { text = '%', prio = 5 },
-      --   Zero = { text = '0', prio = 1 },
-      --   w = { text = 'w', prio = 10 },
-      --   b = { text = 'b', prio = 9 },
-      --   e = { text = 'e', prio = 8 },
-      --   W = { text = 'W', prio = 7 },
-      --   B = { text = 'B', prio = 6 },
-      --   E = { text = 'E', prio = 5 },
-      -- },
+      hints = {
+        -- Caret = { text = '^', prio = 2 },
+        -- Dollar = { text = '$', prio = 1 },
+        -- MatchingPair = { text = '%', prio = 5 },
+        -- Zero = { text = '0', prio = 1 },
+        -- w = { text = 'w', prio = 10 },
+        -- b = { text = 'b', prio = 9 },
+        -- e = { text = 'e', prio = 8 },
+        -- W = { text = 'W', prio = 7 },
+        -- B = { text = 'B', prio = 6 },
+        -- E = { text = 'E', prio = 5 },
+        f = { text = 'f', prio = 0 },
+        F = { text = 'F', prio = 0 },
+      },
       -- gutterHints = {
       --   G = { text = 'G', prio = 10 },
       --   gg = { text = 'gg', prio = 9 },
