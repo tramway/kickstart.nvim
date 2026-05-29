@@ -119,10 +119,6 @@ end
 -- vim.pack intro, build hooks
 -- ============================================================
 do
-  -- [[ Intro to `vim.pack` ]]
-  -- `vim.pack` is a new plugin manager built into Neovim,
-  --  which provides a Lua interface for installing and managing plugins.
-  --
   --  See `:help vim.pack`, `:help vim.pack-examples` or the
   --  excellent blog post from the creator of vim.pack and mini.nvim:
   --  https://echasnovski.com/blog/2026-03-13-a-guide-to-vim-pack
@@ -132,13 +128,6 @@ do
   --
   --  To update plugins, run
   --    :lua vim.pack.update()
-  --
-  --
-  --  Throughout the rest of the config there will be examples
-  --  of how to install and configure plugins using `vim.pack`.
-  --
-  --  In this section we set up some autocommands to run build
-  --  steps for certain plugins after they are installed or updated.
 
   local function run_build(name, cmd, cwd)
     local result = vim.system(cmd, { cwd = cwd }):wait()
@@ -182,45 +171,18 @@ do
   })
 end
 
----Because most plugins are hosted on GitHub, you can use the helper
----function to have less repetition in the following sections.
----@param repo string
----@return string
-local function gh(repo) return 'https://github.com/' .. repo end
-
 -- ============================================================
 -- SECTION 3: UI / CORE UX PLUGINS
 -- guess-indent, gitsigns, which-key, colorscheme, todo-comments, mini modules
 -- ============================================================
 do
-  -- [[ Installing and Configuring Plugins ]]
-  --
-  -- To install a plugin simply call `vim.pack.add` with its git url.
-  -- This will download the default branch of the plugin, which will usually be `main` or `master`
-  -- You can also have more advanced specs, which we will talk about later.
-  --
-  -- For most plugins its not enough to install them, you also need to call their `.setup()` to start them.
-  --
-  -- For example, lets say we want to install `guess-indent.nvim` - a plugin for
-  -- automatically detecting and setting the indentation.
-  --
-  -- We first install it from https://github.com/NMAC427/guess-indent.nvim
-  -- and then call its `setup()` function to start it with default settings.
-  vim.pack.add { gh 'NMAC427/guess-indent.nvim' }
+  vim.pack.add { 'https://github.com/NMAC427/guess-indent.nvim' }
   require('guess-indent').setup {}
 
-  -- Because lua is a real programming language, you can also have some logic to your installation -
-  -- like only installing a plugin if a condition is met.
-  --
-  -- Here we only install `nvim-web-devicons` (which adds pretty icons) if we have a Nerd Font,
-  -- since otherwise the icons won't display properly.
-  if vim.g.have_nerd_font then vim.pack.add { gh 'nvim-tree/nvim-web-devicons' } end
+  if vim.g.have_nerd_font then vim.pack.add { 'https://github.com/nvim-tree/nvim-web-devicons' } end
 
-  -- Here is a more advanced configuration example that passes options to `gitsigns.nvim`
-  --
   -- See `:help gitsigns` to understand what each configuration key does.
-  -- Adds git related signs to the gutter, as well as utilities for managing changes
-  vim.pack.add { gh 'lewis6991/gitsigns.nvim' }
+  vim.pack.add { 'https://github.com/lewis6991/gitsigns.nvim' }
   require('gitsigns').setup {
     signs = {
       add = { text = '+' }, ---@diagnostic disable-line: missing-fields
@@ -231,13 +193,10 @@ do
     },
   }
 
-  -- Useful plugin to show you pending keybinds.
-  vim.pack.add { gh 'folke/which-key.nvim' }
+  vim.pack.add { 'https://github.com/folke/which-key.nvim' }
   require('which-key').setup {
-    -- Delay between pressing a key and opening which-key (milliseconds)
-    delay = 0,
+    delay = 100,
     icons = { mappings = vim.g.have_nerd_font },
-    -- Document existing key chains
     spec = {
       { '<leader>s', group = '[S]earch', mode = { 'n', 'v' } },
       { '<leader>d', group = '[D]ebug/Document' },
@@ -251,21 +210,15 @@ do
     },
   }
 
-  -- [[ Colorscheme ]]
-  -- You can easily change to a different colorscheme.
-  -- Change the name of the colorscheme plugin below, and then
-  -- change the command under that to load whatever the name of that colorscheme is.
-  --
   -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-  vim.pack.add { gh 'neanias/everforest-nvim' }
+  vim.pack.add { 'https://github.com/neanias/everforest-nvim' }
   require('everforest').setup {
     background = 'soft',
     ui_contrast = 'high',
   }
   vim.cmd.colorscheme 'everforest'
 
-  -- Highlight todo, notes, etc in comments
-  vim.pack.add { gh 'folke/todo-comments.nvim' }
+  vim.pack.add { 'https://github.com/folke/todo-comments.nvim' }
   require('todo-comments').setup {
     signs = false,
 
@@ -287,7 +240,7 @@ do
 
   -- [[ mini.nvim ]]
   --  A collection of various small independent plugins/modules
-  vim.pack.add { gh 'nvim-mini/mini.nvim' }
+  vim.pack.add { 'https://github.com/nvim-mini/mini.nvim' }
 
   -- Better Around/Inside textobjects
   --
@@ -359,12 +312,12 @@ do
 
   ---@type (string|vim.pack.Spec)[]
   local telescope_plugins = {
-    gh 'nvim-lua/plenary.nvim',
-    gh 'nvim-telescope/telescope.nvim',
-    gh 'nvim-telescope/telescope-ui-select.nvim',
+    'https://github.com/nvim-lua/plenary.nvim',
+    'https://github.com/nvim-telescope/telescope.nvim',
+    'https://github.com/nvim-telescope/telescope-ui-select.nvim',
   }
   if vim.fn.executable 'make' == 1 then
-    table.insert(telescope_plugins, gh 'nvim-telescope/telescope-fzf-native.nvim')
+    table.insert(telescope_plugins, 'https://github.com/nvim-telescope/telescope-fzf-native.nvim')
   end
 
   -- NOTE: You can install multiple plugins at once
@@ -528,7 +481,7 @@ do
   -- and elegantly composed help section, `:help lsp-vs-treesitter`
 
   -- Useful status updates for LSP.
-  vim.pack.add { gh 'j-hui/fidget.nvim' }
+  vim.pack.add { 'https://github.com/j-hui/fidget.nvim' }
   require('fidget').setup {}
 
   --  This function gets run when an LSP attaches to a particular buffer.
@@ -651,10 +604,10 @@ do
   }
 
   vim.pack.add {
-    gh 'neovim/nvim-lspconfig',
-    gh 'mason-org/mason.nvim',
-    gh 'mason-org/mason-lspconfig.nvim',
-    gh 'WhoIsSethDaniel/mason-tool-installer.nvim',
+    'https://github.com/neovim/nvim-lspconfig',
+    'https://github.com/mason-org/mason.nvim',
+    'https://github.com/mason-org/mason-lspconfig.nvim',
+    'https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim',
   }
 
   -- Automatically install LSPs and related tools to stdpath for Neovim
@@ -679,12 +632,14 @@ do
     vim.lsp.enable(name)
   end
 
-  vim.pack.add { gh 'pmizio/typescript-tools.nvim' }
+  vim.pack.add { 'https://github.com/pmizio/typescript-tools.nvim' }
   require('typescript-tools').setup {
-    dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' },
+    dependencies = { 'nvim-lua/plenary.nvim' },
   }
 
+  -- TODO: without telescope "gotoreference" works as expected when it comes to navigating to source code of libs
   vim.keymap.set('n', 'grs', '<cmd>TSToolsGoToSourceDefinition<cr>', { desc = 'Go to source definition' })
+
   vim.lsp.enable 'angularls'
   vim.lsp.enable 'cssls'
   -- TODO: Add emmet abbreviation
@@ -697,7 +652,7 @@ end
 -- ============================================================
 do
   -- [[ Formatting ]]
-  vim.pack.add { gh 'stevearc/conform.nvim' }
+  vim.pack.add { 'https://github.com/stevearc/conform.nvim' }
   require('conform').setup {
     notify_on_error = false,
     format_on_save = function(bufnr)
@@ -722,10 +677,10 @@ do
     -- You can also specify external formatters in here.
     formatters_by_ft = {
       lua = { 'stylua' },
-      htmlangular = { 'prettier' },
-      html = { 'prettier' },
-      angular = { 'prettier' },
-      typescript = { 'prettier', 'eslint_d' },
+      htmlangular = { 'prettierd' },
+      html = { 'prettierd' },
+      angular = { 'prettierd' },
+      typescript = { 'prettierd', 'eslint_d' },
       -- You can use 'stop_after_first' to run the first available formatter from the list
       -- javascript = { "prettierd", "prettier", stop_after_first = true },
     },
@@ -765,17 +720,17 @@ do
 
   -- NOTE: You can also specify plugin using a version range for its git tag.
   --  See `:help vim.version.range()` for more info
-  vim.pack.add { { src = gh 'L3MON4D3/LuaSnip', version = vim.version.range '2.*' } }
+  vim.pack.add { { src = 'https://github.com/L3MON4D3/LuaSnip', version = vim.version.range '2.*' } }
   require('luasnip').setup {}
   -- `friendly-snippets` contains a variety of premade snippets.
   --    See the README about individual language/framework/plugin snippets:
   --    https://github.com/rafamadriz/friendly-snippets
   --
-  -- vim.pack.add { gh 'rafamadriz/friendly-snippets' }
+  -- vim.pack.add {'https://github.com/rafamadriz/friendly-snippets' }
   -- require('luasnip.loaders.from_vscode').lazy_load()
 
   -- [[ Autocomplete Engine ]]
-  vim.pack.add { { src = gh 'saghen/blink.cmp', version = vim.version.range '1.*' } }
+  vim.pack.add { { src = 'https://github.com/saghen/blink.cmp', version = vim.version.range '1.*' } }
   require('blink.cmp').setup {
     keymap = {
       -- TODO: Add "Enter as way to apply suggestion"
@@ -849,7 +804,7 @@ do
   --  See `:help nvim-treesitter-intro`
 
   -- NOTE: You can also specify a branch or a specific commit
-  vim.pack.add { { src = gh 'nvim-treesitter/nvim-treesitter', version = 'main' } }
+  vim.pack.add { { src = 'https://github.com/nvim-treesitter/nvim-treesitter', version = 'main' } }
 
   -- Ensure basic parsers are installed
   local parsers =
@@ -926,7 +881,7 @@ do
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.
-  vim.pack.add { gh 'smoka7/hop.nvim' }
+  vim.pack.add { 'https://github.com/smoka7/hop.nvim' }
   require('hop').setup {
     tag = '*', -- optional but strongly recommended
   }
@@ -938,7 +893,7 @@ do
   }
   vim.keymap.set('n', '\\', function() require('hop').hint_words() end, { remap = true })
 
-  vim.pack.add { gh 'folke/trouble.nvim' }
+  vim.pack.add { 'https://github.com/folke/trouble.nvim' }
   vim.keymap.set('n', '<leader>xx', '<cmd>Trouble diagnostics toggle<cr>', { desc = 'Diagnostics (Trouble)' })
   vim.keymap.set(
     'n',
@@ -956,7 +911,7 @@ do
   vim.keymap.set('n', '<leader>xL', '<cmd>Trouble loclist toggle<cr>', { desc = 'Location List (Trouble)' })
   vim.keymap.set('n', '<leader>xQ', '<cmd>Trouble qflist toggle<cr>', { desc = 'Quickfix List (Trouble)' })
 
-  vim.pack.add { gh 'stevearc/oil.nvim' }
+  vim.pack.add { 'https://github.com/stevearc/oil.nvim' }
   require('oil').setup {
     float = {
       border = 'single',
@@ -964,16 +919,16 @@ do
   }
   vim.keymap.set('n', '<leader>-', '<cmd>Oil --float<CR>', { desc = 'Quit All' })
 
-  vim.pack.add { gh 'm4xshen/hardtime.nvim' }
+  vim.pack.add { 'https://github.com/m4xshen/hardtime.nvim' }
   require('hardtime').setup {
     dependencies = { 'MunifTanjim/nui.nvim' },
   }
 
-  vim.pack.add { gh 'rcarriga/nvim-notify' }
+  vim.pack.add { 'https://github.com/rcarriga/nvim-notify' }
   vim.o.termguicolors = true
   vim.notify = require 'notify'
 
-  vim.pack.add { gh 'tris203/precognition.nvim' }
+  vim.pack.add { 'https://github.com/tris203/precognition.nvim' }
   require('precognition').setup {
     opts = {
       targetMotionHints = { enabled = false },
@@ -1006,7 +961,7 @@ do
     },
   }
 
-  vim.pack.add { gh 'kdheepak/lazygit.nvim' }
+  vim.pack.add { 'https://github.com/kdheepak/lazygit.nvim' }
   require('telescope').load_extension 'lazygit'
   vim.keymap.set('n', '<leader>gg', '<cmd>LazyGit<CR>', { desc = 'LazyGit' })
 
@@ -1034,11 +989,11 @@ do
   --   },
   -- },
   --
-  vim.pack.add { gh 'FabijanZulj/blame.nvim' }
+  vim.pack.add { 'https://github.com/FabijanZulj/blame.nvim' }
   require('blame').setup()
   vim.keymap.set('n', '<leader>gb', '<cmd>BlameToggle virtual<CR>', { desc = 'Toggle blame' })
 
-  vim.pack.add { gh 'LunarVim/bigfile.nvim' }
+  vim.pack.add { 'https://github.com/LunarVim/bigfile.nvim' }
 
   -- { -- Copilot
   --   'CopilotC-Nvim/CopilotChat.nvim',
