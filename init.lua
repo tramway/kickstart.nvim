@@ -965,30 +965,26 @@ do
   require('telescope').load_extension 'lazygit'
   vim.keymap.set('n', '<leader>gg', '<cmd>LazyGit<CR>', { desc = 'LazyGit' })
 
-  -- {
-  --   'NeogitOrg/neogit',
-  --   lazy = true,
-  --   dependencies = {
-  --     'nvim-lua/plenary.nvim', -- required
-  --     'sindrets/diffview.nvim', -- optional - Diff integration
-  --
-  --     -- Only one of these is needed.
-  --     'nvim-telescope/telescope.nvim', -- optional
-  --     -- "ibhagwan/fzf-lua",              -- optional
-  --     -- "nvim-mini/mini.pick",           -- optional
-  --     'folke/snacks.nvim', -- optional
-  --   },
-  --   cmd = 'Neogit',
-  --   keys = {
-  --     { '<leader>gn', '<cmd>Neogit<cr>', desc = 'Show Neogit UI' },
-  --   },
-  --   opts = { -- Disable line numbers
-  --     disable_line_numbers = false,
-  --     -- Disable relative line numbers
-  --     disable_relative_line_numbers = false,
-  --   },
-  -- },
-  --
+  vim.pack.add { 'https://github.com/NeogitOrg/neogit' }
+  require('neogit').setup {
+    dependencies = {
+      'nvim-lua/plenary.nvim', -- required
+      'sindrets/diffview.nvim', -- optional - Diff integration
+
+      -- Only one of these is needed.
+      'nvim-telescope/telescope.nvim', -- optional
+      -- "ibhagwan/fzf-lua",              -- optional
+      -- "nvim-mini/mini.pick",           -- optional
+      'folke/snacks.nvim', -- optional
+    },
+    opts = { -- Disable line numbers
+      disable_line_numbers = false,
+      -- Disable relative line numbers
+      disable_relative_line_numbers = false,
+    },
+  }
+  vim.keymap.set('n', '<leader>gn', '<cmd>Neogit<CR>', { desc = 'Neogit' })
+
   vim.pack.add { 'https://github.com/FabijanZulj/blame.nvim' }
   require('blame').setup()
   vim.keymap.set('n', '<leader>gb', '<cmd>BlameToggle virtual<CR>', { desc = 'Toggle blame' })
