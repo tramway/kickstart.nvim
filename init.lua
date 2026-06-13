@@ -928,39 +928,6 @@ do
   vim.o.termguicolors = true
   vim.notify = require 'notify'
 
-  vim.pack.add { 'https://github.com/tris203/precognition.nvim' }
-  require('precognition').setup {
-    opts = {
-      targetMotionHints = { enabled = false },
-      -- startVisible = true,
-      -- showBlankVirtLine = true,
-      -- highlightColor = { link = 'Comment' },
-      hints = {
-        -- Caret = { text = '^', prio = 2 },
-        -- Dollar = { text = '$', prio = 1 },
-        -- MatchingPair = { text = '%', prio = 5 },
-        -- Zero = { text = '0', prio = 1 },
-        -- w = { text = 'w', prio = 10 },
-        -- b = { text = 'b', prio = 9 },
-        -- e = { text = 'e', prio = 8 },
-        -- W = { text = 'W', prio = 7 },
-        -- B = { text = 'B', prio = 6 },
-        -- E = { text = 'E', prio = 5 },
-        f = { text = 'f', prio = 0 },
-        F = { text = 'F', prio = 0 },
-      },
-      -- gutterHints = {
-      --   G = { text = 'G', prio = 10 },
-      --   gg = { text = 'gg', prio = 9 },
-      --   PrevParagraph = { text = '{', prio = 8 },
-      --   NextParagraph = { text = '}', prio = 8 },
-      -- },
-      -- disabled_fts = {
-      --   'startify',
-      -- },
-    },
-  }
-
   vim.pack.add { 'https://github.com/kdheepak/lazygit.nvim' }
   require('telescope').load_extension 'lazygit'
   vim.keymap.set('n', '<leader>gg', '<cmd>LazyGit<CR>', { desc = 'LazyGit' })
