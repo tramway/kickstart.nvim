@@ -1,7 +1,4 @@
--- ============================================================
--- SECTION 1: FOUNDATION
--- Core Neovim settings, leaders, options, basic keymaps, basic autocmds
--- ============================================================
+-- SECTION 1: FOUNDATION Core Neovim settings, leaders, options, basic keymaps, basic autocmds
 do
   vim.loader.enable() -- Enable faster startup by caching compiled Lua modules
 
@@ -31,7 +28,6 @@ do
   vim.o.list = true
   vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
-  -- Preview substitutions live, as you type!
   vim.o.inccommand = 'split'
   vim.o.cursorline = true
   vim.o.scrolloff = 10
@@ -39,19 +35,15 @@ do
   vim.o.confirm = true
 
   vim.keymap.set('n', '<leader>Q', '<cmd>qa<cr>', { desc = 'Quit All' })
-  -- Clear highlights on search when pressing <Esc> in normal mode
-  --  See `:help hlsearch`
+
   vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
-  -- Diagnostic Config & Keymaps
-  --  See `:help vim.diagnostic.Opts`
   vim.diagnostic.config {
     update_in_insert = false,
     severity_sort = true,
     float = { border = 'rounded', source = 'if_many' },
     underline = { severity = { min = vim.diagnostic.severity.WARN } },
 
-    -- Can switch between these as you prefer
     virtual_text = true, -- Text shows up at the end of the line
     virtual_lines = { current_line = true }, -- Text shows up underneath the line, with virtual lines
 
@@ -69,20 +61,11 @@ do
 
   vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
-  -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
-  -- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
-  -- or just use <C-\><C-n> to exit terminal mode
-  vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
-
-  --  See `:help wincmd` for a list of all window commands
   vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
   vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
   vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
   vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
-  -- [[ Basic Autocommands ]] See `:help lua-guide-autocommands`
-
-  -- Highlight when yanking (copying) text. See `:help vim.hl.on_yank()`
   vim.api.nvim_create_autocmd('TextYankPost', {
     desc = 'Highlight when yanking (copying) text',
     group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
@@ -90,21 +73,8 @@ do
   })
 end
 
--- ============================================================
--- SECTION 2: PLUGIN MANAGER INTRO
--- vim.pack intro, build hooks
--- ============================================================
+-- SECTION 2: PLUGIN MANAGER INTRO vim.pack intro, build hooks
 do
-  --  See `:help vim.pack`, `:help vim.pack-examples` or the
-  --  excellent blog post from the creator of vim.pack and mini.nvim:
-  --  https://echasnovski.com/blog/2026-03-13-a-guide-to-vim-pack
-  --
-  --  To inspect plugin state and pending updates, run
-  --    :lua vim.pack.update(nil, { offline = true })
-  --
-  --  To update plugins, run
-  --    :lua vim.pack.update()
-
   local function run_build(name, cmd, cwd)
     local result = vim.system(cmd, { cwd = cwd }):wait()
     if result.code ~= 0 then
@@ -147,10 +117,7 @@ do
   })
 end
 
--- ============================================================
--- SECTION 3: UI / CORE UX PLUGINS
--- guess-indent, gitsigns, which-key, colorscheme, todo-comments, mini modules
--- ============================================================
+-- SECTION 3: UI / CORE UX PLUGINS guess-indent, gitsigns, which-key, colorscheme, todo-comments, mini modules
 do
   vim.pack.add { 'https://github.com/NMAC427/guess-indent.nvim' }
   require('guess-indent').setup {}
@@ -184,7 +151,6 @@ do
     },
   }
 
-  -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
   vim.pack.add { 'https://github.com/neanias/everforest-nvim' }
   require('everforest').setup {
     background = 'soft',
@@ -214,11 +180,9 @@ do
 
   vim.pack.add { 'https://github.com/nvim-mini/mini.nvim' }
 
-  -- If a nerd font is available, load the icons module for pretty icons in various plugins.
   if vim.g.have_nerd_font then
     require('mini.icons').setup()
-    -- Used for backwards compatibility with plugins that require `nvim-web-devicons` (e.g. telescope.nvim)
-    MiniIcons.mock_nvim_web_devicons()
+    MiniIcons.mock_nvim_web_devicons() -- Used for backwards compatibility with plugins that require `nvim-web-devicons` (e.g. telescope.nvim)
   end
 
   -- Better Around/Inside textobjects
@@ -243,36 +207,13 @@ do
   -- - sr)'  - [S]urround [R]eplace [)] [']
   require('mini.surround').setup()
 
-  -- Simple and easy statusline.
-  --  You could remove this setup call if you don't like it,
-  --  and try some other statusline plugin
   local statusline = require 'mini.statusline'
-  -- Set `use_icons` to true if you have a Nerd Font
   statusline.setup { use_icons = vim.g.have_nerd_font }
-
-  -- You can configure sections in the statusline by overriding their
-  -- default behavior. For example, here we set the section for
-  -- cursor location to LINE:COLUMN
-  ---@diagnostic disable-next-line: duplicate-set-field
   statusline.section_location = function() return '%2l:%-2v' end
-
-  -- ... and there is more!
-  --  Check out: https://github.com/nvim-mini/mini.nvim
 end
 
--- ============================================================
--- SECTION 4: SEARCH & NAVIGATION
--- Telescope setup, keymaps, LSP picker mappings
--- ============================================================
+-- SECTION 4: SEARCH & NAVIGATION Telescope setup, keymaps, LSP picker mappings
 do
-  -- Two important keymaps to use while in Telescope are:
-  --  - Insert mode: <c-/>
-  --  - Normal mode: ?
-  --
-  -- This opens a window that shows you all of the keymaps for the current
-  -- Telescope picker. This is really useful to discover what Telescope can
-  -- do as well as how to actually do it!
-
   ---@type (string|vim.pack.Spec)[]
   local telescope_plugins = {
     'https://github.com/nvim-lua/plenary.nvim',
@@ -282,19 +223,9 @@ do
   if vim.fn.executable 'make' == 1 then
     table.insert(telescope_plugins, 'https://github.com/nvim-telescope/telescope-fzf-native.nvim')
   end
-
-  -- NOTE: You can install multiple plugins at once
   vim.pack.add(telescope_plugins)
-
-  -- See `:help telescope` and `:help telescope.setup()`
+  local ignored_files = { './^.git/*', './node_modules/*', 'node_modules', '^node_modules/*', 'node_modules/*' }
   require('telescope').setup {
-    -- You can put your default mappings / updates / etc. in here
-    --  All the info you're looking for is in `:help telescope.setup()`
-    --
-    -- defaults = {
-    --   mappings = {
-    --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-    --   },
     defaults = {
       path_display = {
         filename_first = {
@@ -306,23 +237,20 @@ do
     pickers = {
       find_files = {
         hidden = true,
-        file_ignore_patterns = { './^.git/*', './node_modules/*', 'node_modules', '^node_modules/*', 'node_modules/*' },
+        file_ignore_patterns = ignored_files,
       },
       live_grep = {
         additional_args = function() return { '--hidden' } end,
-        file_ignore_patterns = { './^.git/*', './node_modules/*', 'node_modules', '^node_modules/*', 'node_modules/*' },
+        file_ignore_patterns = ignored_files,
       },
     },
     extensions = {
       ['ui-select'] = { require('telescope.themes').get_dropdown() },
     },
   }
-
-  -- Enable Telescope extensions if they are installed
   pcall(require('telescope').load_extension, 'fzf')
   pcall(require('telescope').load_extension, 'ui-select')
 
-  -- See `:help telescope.builtin`
   local builtin = require 'telescope.builtin'
   vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
   vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
@@ -391,10 +319,7 @@ do
   )
 end
 
--- ============================================================
--- SECTION 5: LSP
--- LSP keymaps, server configuration, Mason tools installations
--- ============================================================
+-- SECTION 5: LSP LSP keymaps, server configuration, Mason tools installations
 do
   -- [[ LSP Configuration ]]
   -- LSP stands for Language Server Protocol. It's a protocol that helps editors
@@ -578,10 +503,7 @@ do
   vim.lsp.enable 'html'
 end
 
--- ============================================================
--- SECTION 6: FORMATTING
--- conform.nvim setup and keymap
--- ============================================================
+-- SECTION 6: FORMATTING conform.nvim setup and keymap
 do
   -- [[ Formatting ]]
   vim.pack.add { 'https://github.com/stevearc/conform.nvim' }
@@ -643,10 +565,7 @@ do
   )
 end
 
--- ============================================================
--- SECTION 7: AUTOCOMPLETE & SNIPPETS
--- blink.cmp and luasnip setup
--- ============================================================
+-- SECTION 7: AUTOCOMPLETE & SNIPPETS blink.cmp and luasnip setup
 do
   -- [[ Snippet Engine ]]
 
@@ -730,10 +649,7 @@ do
   }
 end
 
--- ============================================================
--- SECTION 8: TREESITTER
--- Parser installation, syntax highlighting, folds, indentation
--- ============================================================
+-- SECTION 8: TREESITTER Parser installation, syntax highlighting, folds, indentation
 do
   -- [[ Configure Treesitter ]]
   --  Used to highlight, edit, and navigate code
@@ -793,10 +709,7 @@ do
   })
 end
 
--- ============================================================
--- SECTION 9: OPTIONAL EXAMPLES / NEXT STEPS
--- kickstart.plugins.* examples
--- ============================================================
+-- SECTION 9: OPTIONAL EXAMPLES / NEXT STEPS kickstart.plugins.* examples
 do
   require 'custom.plugins.init'
   require 'kickstart.plugins.debug'
