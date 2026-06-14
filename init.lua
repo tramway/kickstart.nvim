@@ -438,10 +438,6 @@ end
 -- ============================================================
 do
   -- [[ LSP Configuration ]]
-  -- Brief aside: **What is LSP?**
-  --
-  -- LSP is an initialism you've probably heard, but might not understand what it is.
-  --
   -- LSP stands for Language Server Protocol. It's a protocol that helps editors
   -- and language tooling communicate in a standardized fashion.
   --
@@ -456,9 +452,6 @@ do
   --  - Autocompletion
   --  - Symbol Search
   --  - and more!
-  --
-  -- Thus, Language Servers are external tools that must be installed separately from
-  -- Neovim. This is where `mason` and related plugins come into play.
   --
   -- If you're wondering about lsp vs treesitter, you can check out the wonderfully
   -- and elegantly composed help section, `:help lsp-vs-treesitter`
