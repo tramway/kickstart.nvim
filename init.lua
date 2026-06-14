@@ -319,14 +319,16 @@ do
           reverse_directories = false,
         },
       },
-      file_ignore_patterns = { './^.git/*', './node_modules/*', 'node_modules', '^node_modules/*', 'node_modules/*' },
+      file_ignore_patterns = {},
     },
     pickers = {
       find_files = {
         hidden = true,
+        file_ignore_patterns = { './^.git/*', './node_modules/*', 'node_modules', '^node_modules/*', 'node_modules/*' },
       },
       live_grep = {
         additional_args = function() return { '--hidden' } end,
+        file_ignore_patterns = { './^.git/*', './node_modules/*', 'node_modules', '^node_modules/*', 'node_modules/*' },
       },
     },
     extensions = {
@@ -617,9 +619,6 @@ do
   require('typescript-tools').setup {
     dependencies = { 'nvim-lua/plenary.nvim' },
   }
-
-  -- TODO: without telescope "gotoreference" works as expected when it comes to navigating to source code of libs
-  vim.keymap.set('n', 'grs', '<cmd>TSToolsGoToSourceDefinition<cr>', { desc = 'Go to source definition' })
 
   vim.lsp.enable 'angularls'
   vim.lsp.enable 'cssls'
