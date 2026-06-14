@@ -658,6 +658,14 @@ do
   vim.pack.add { 'https://github.com/rafamadriz/friendly-snippets' }
   require('luasnip.loaders.from_vscode').lazy_load()
 
+  vim.pack.add {
+    'https://github.com/benfowler/telescope-luasnip.nvim',
+  }
+  require('luasnip').setup {
+    module = 'telescope._extensions.luasnip', -- if you wish to lazy-load
+  }
+  require('telescope').load_extension 'luasnip'
+
   -- [[ Autocomplete Engine ]]
   vim.pack.add { { src = 'https://github.com/saghen/blink.cmp', version = vim.version.range '1.*' } }
   require('blink.cmp').setup {
