@@ -389,13 +389,6 @@ do
   -- Automatically install LSPs and related tools to stdpath for Neovim
   require('mason').setup {}
 
-  -- Ensure the servers and tools above are installed
-  --
-  -- To check the current status of installed tools and/or manually install
-  -- other tools, you can run
-  --    :Mason
-  --
-  -- You can press `g?` for help in this menu.
   ---@type table<string, vim.lsp.Config>
   local servers = {
     stylua = {},
@@ -427,7 +420,6 @@ end
 
 -- SECTION 6: FORMATTING conform.nvim setup and keymap
 do
-  -- [[ Formatting ]]
   vim.pack.add { 'https://github.com/stevearc/conform.nvim' }
   require('conform').setup {
     notify_on_error = false,
@@ -489,10 +481,6 @@ end
 
 -- SECTION 7: AUTOCOMPLETE & SNIPPETS blink.cmp and luasnip setup
 do
-  -- [[ Snippet Engine ]]
-
-  -- NOTE: You can also specify plugin using a version range for its git tag.
-  --  See `:help vim.version.range()` for more info
   vim.pack.add { { src = 'https://github.com/L3MON4D3/LuaSnip', version = vim.version.range '2.*' } }
   require('luasnip').setup {}
 
@@ -573,15 +561,7 @@ end
 
 -- SECTION 8: TREESITTER Parser installation, syntax highlighting, folds, indentation
 do
-  -- [[ Configure Treesitter ]]
-  --  Used to highlight, edit, and navigate code
-  --
-  --  See `:help nvim-treesitter-intro`
-
-  -- NOTE: You can also specify a branch or a specific commit
-  vim.pack.add { { src = 'https://github.com/nvim-treesitter/nvim-treesitter', version = 'main' } }
-
-  -- Ensure basic parsers are installed
+  vim.pack.add { { src = 'https://github.com/nvim-treesitter/nvim-treesitter', version = 'main' } } --  See `:help nvim-treesitter-intro`
   local parsers =
     { 'angular', 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' }
   require('nvim-treesitter').install(parsers)
