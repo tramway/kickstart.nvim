@@ -151,24 +151,7 @@ do
   vim.cmd.colorscheme 'everforest'
 
   vim.pack.add { 'https://github.com/folke/todo-comments.nvim' }
-  require('todo-comments').setup {
-    signs = false,
-
-    keywords = {
-      FIX = {
-        icon = ' ', -- icon used for the sign, and in search results
-        color = 'error', -- can be a hex color, or a named color (see below)
-        alt = { 'FIXME', 'BUG', 'FIXIT', 'ISSUE', 'fix' }, -- a set of other keywords that all map to this FIX keywords
-        -- signs = false, -- configure signs for some keywords individually
-      },
-      TODO = { icon = ' ', color = 'info', alt = { 'todo' } },
-      HACK = { icon = ' ', color = 'warning', alt = { 'hack' } },
-      WARN = { icon = ' ', color = 'warning', alt = { 'WARNING', 'XXX', 'warn' } },
-      PERF = { icon = ' ', alt = { 'OPTIM', 'PERFORMANCE', 'OPTIMIZE', 'perf' } },
-      NOTE = { icon = ' ', color = 'hint', alt = { 'INFO', 'info' } },
-      TEST = { icon = '⏲ ', color = 'test', alt = { 'TESTING', 'PASSED', 'FAILED', 'test' } },
-    },
-  }
+  require('todo-comments').setup {}
 
   vim.pack.add { 'https://github.com/nvim-mini/mini.nvim' }
 
