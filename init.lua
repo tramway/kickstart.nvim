@@ -339,11 +339,7 @@ do
       --  For example, in C this would take you to the header.
       map('grD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
 
-      -- The following two autocommands are used to highlight references of the
-      -- word under your cursor when your cursor rests there for a little while.
       --    See `:help CursorHold` for information about when this is executed
-      --
-      -- When you move your cursor, the highlights will be cleared (the second autocommand).
       local client = vim.lsp.get_client_by_id(event.data.client_id)
       if client and client:supports_method('textDocument/documentHighlight', event.buf) then
         local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
@@ -368,7 +364,6 @@ do
         })
       end
 
-      -- The following code creates a keymap to toggle inlay hints in your code
       if client and client:supports_method('textDocument/inlayHint', event.buf) then
         map(
           '<leader>th',
@@ -388,17 +383,13 @@ do
 
   -- Automatically install LSPs and related tools to stdpath for Neovim
   require('mason').setup {}
-
   ---@type table<string, vim.lsp.Config>
   local servers = {
     stylua = {},
   }
-
   local ensure_installed = vim.tbl_keys(servers or {})
-  vim.list_extend(ensure_installed, {
-    -- You can add other tools here that you want Mason to install
-  })
-
+  -- You can add other tools here that you want Mason to install })
+  vim.list_extend(ensure_installed, {})
   require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
   for name, server in pairs(servers) do
@@ -414,8 +405,8 @@ do
   vim.lsp.enable 'angularls'
   vim.lsp.enable 'cssls'
   vim.lsp.enable 'luals'
-  -- TODO: Add emmet abbreviation
   vim.lsp.enable 'html'
+  vim.lsp.enable 'emmetls'
 end
 
 -- SECTION 6: FORMATTING conform.nvim setup and keymap
