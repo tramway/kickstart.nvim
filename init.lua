@@ -122,17 +122,9 @@ do
   vim.pack.add { 'https://github.com/NMAC427/guess-indent.nvim' }
   require('guess-indent').setup {}
 
-  -- See `:help gitsigns` to understand what each configuration key does.
   vim.pack.add { 'https://github.com/lewis6991/gitsigns.nvim' }
-  require('gitsigns').setup {
-    signs = {
-      add = { text = '+' }, ---@diagnostic disable-line: missing-fields
-      change = { text = '~' }, ---@diagnostic disable-line: missing-fields
-      delete = { text = '_' }, ---@diagnostic disable-line: missing-fields
-      topdelete = { text = '‾' }, ---@diagnostic disable-line: missing-fields
-      changedelete = { text = '~' }, ---@diagnostic disable-line: missing-fields
-    },
-  }
+  require('gitsigns').setup { current_line_blame = true }
+  vim.keymap.set('n', '<leader>gb', '<cmd>Gitsigns blame<CR>', { desc = 'Toggle blame' })
 
   vim.pack.add { 'https://github.com/folke/which-key.nvim' }
   require('which-key').setup {
@@ -663,10 +655,6 @@ do
     },
   }
   vim.keymap.set('n', '<leader>gn', '<cmd>Neogit<CR>', { desc = 'Neogit' })
-
-  vim.pack.add { 'https://github.com/FabijanZulj/blame.nvim' }
-  require('blame').setup()
-  vim.keymap.set('n', '<leader>gb', '<cmd>BlameToggle virtual<CR>', { desc = 'Toggle blame' })
 
   vim.pack.add { 'https://github.com/LunarVim/bigfile.nvim' }
 
