@@ -433,14 +433,12 @@ do
     default_format_opts = {
       lsp_format = 'fallback', -- Use external formatters if configured below, otherwise use LSP formatting. Set to `false` to disable LSP formatting entirely.
     },
-    -- You can also specify external formatters in here.
     formatters_by_ft = {
       lua = { 'stylua' },
       htmlangular = { 'prettierd' },
       html = { 'prettierd' },
       angular = { 'prettierd' },
       typescript = { 'prettierd', 'eslint_d' },
-      -- You can use 'stop_after_first' to run the first available formatter from the list
       -- javascript = { "prettierd", "prettier", stop_after_first = true },
     },
   }
@@ -450,15 +448,9 @@ do
     ---@type conform.FileFormatterConfig
 
     return {
-      meta = {
-        url = 'https://github.com/mantoni/eslint_d.js/',
-        description = 'Like ESLint, but faster.',
-      },
       command = util.from_node_modules 'eslint_d',
       args = { '--fix-to-stdout', '--stdin', '--stdin-filename', '$FILENAME' },
-      cwd = util.root_file {
-        'package.json',
-      },
+      cwd = util.root_file { 'package.json' },
     }
   end
 
@@ -519,8 +511,6 @@ do
     },
 
     appearance = {
-      -- 'mono' (default) for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
-      -- Adjusts spacing to ensure icons are aligned
       nerd_font_variant = 'mono',
     },
 
@@ -560,9 +550,7 @@ do
   ---@param buf integer
   ---@param language string
   local function treesitter_try_attach(buf, language)
-    -- Check if a parser exists and load it
     if not vim.treesitter.language.add(language) then return end
-    -- Enable syntax highlighting and other treesitter features
     vim.treesitter.start(buf, language)
 
     -- Enable treesitter based folds
@@ -570,11 +558,7 @@ do
     -- vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
     -- vim.wo.foldmethod = 'expr'
 
-    -- Check if treesitter indentation is available for this language, and if so enable it
-    -- in case there is no indent query, the indentexpr will fallback to the vim's built in one
     local has_indent_query = vim.treesitter.query.get(language, 'indents') ~= nil
-
-    -- Enable treesitter based indentation
     if has_indent_query then vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()" end
   end
 
