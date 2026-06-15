@@ -124,7 +124,6 @@ do
 
   vim.pack.add { 'https://github.com/lewis6991/gitsigns.nvim' }
   require('gitsigns').setup { current_line_blame = true }
-  vim.keymap.set('n', '<leader>gb', '<cmd>Gitsigns blame<CR>', { desc = 'Toggle blame' })
 
   vim.pack.add { 'https://github.com/folke/which-key.nvim' }
   require('which-key').setup {
@@ -624,22 +623,20 @@ do
     dependencies = {
       'nvim-lua/plenary.nvim', -- required
       'sindrets/diffview.nvim', -- optional - Diff integration
-
-      -- Only one of these is needed.
       'nvim-telescope/telescope.nvim', -- optional
       -- "ibhagwan/fzf-lua",              -- optional
       -- "nvim-mini/mini.pick",           -- optional
       'folke/snacks.nvim', -- optional
     },
-    opts = { -- Disable line numbers
+    opts = {
       disable_line_numbers = false,
-      -- Disable relative line numbers
       disable_relative_line_numbers = false,
     },
   }
   vim.keymap.set('n', '<leader>gn', '<cmd>Neogit<CR>', { desc = 'Neogit' })
 
   vim.pack.add { 'https://github.com/LunarVim/bigfile.nvim' }
+  require('bigfile').setup { filesize = 10 }
 
   -- { -- Copilot
   --   'CopilotC-Nvim/CopilotChat.nvim',
