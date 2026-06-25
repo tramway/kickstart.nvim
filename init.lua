@@ -32,10 +32,6 @@ do
 
   vim.o.confirm = true
 
-  vim.keymap.set('n', '<leader>Q', '<cmd>qa<cr>', { desc = 'Quit All' })
-
-  vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
-
   vim.diagnostic.config {
     update_in_insert = false,
     severity_sort = true,
@@ -57,6 +53,12 @@ do
     },
   }
 
+  vim.api.nvim_create_autocmd('TextYankPost', {
+    desc = 'Highlight when yanking (copying) text',
+    group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
+    callback = function() vim.hl.on_yank() end,
+  })
+
   vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
   vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
@@ -64,11 +66,8 @@ do
   vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
   vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
-  vim.api.nvim_create_autocmd('TextYankPost', {
-    desc = 'Highlight when yanking (copying) text',
-    group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
-    callback = function() vim.hl.on_yank() end,
-  })
+  vim.keymap.set('n', '<leader>Q', '<cmd>qa<cr>', { desc = 'Quit All' })
+  vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 end
 
 -- SECTION 2: PLUGIN MANAGER INTRO vim.pack intro, build hooks
@@ -157,12 +156,6 @@ do
     MiniIcons.mock_nvim_web_devicons() -- Used for backwards compatibility with plugins that require `nvim-web-devicons` (e.g. telescope.nvim)
   end
 
-  -- Better Around/Inside textobjects
-  --
-  -- Examples:
-  --  - va)  - [V]isually select [A]round [)]paren
-  --  - yiiq - [Y]ank [I]nside [I]+1 [Q]uote
-  --  - ci'  - [C]hange [I]nside [']quote
   require('mini.ai').setup {
     -- NOTE: Avoid conflicts with the built-in incremental selection mappings on Neovim>=0.12 (see `:help treesitter-incremental-selection`)
     mappings = {
@@ -172,11 +165,6 @@ do
     n_lines = 500,
   }
 
-  -- Add/delete/replace surroundings (brackets, quotes, etc.)
-  --
-  -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
-  -- - sd'   - [S]urround [D]elete [']quotes
-  -- - sr)'  - [S]urround [R]eplace [)] [']
   require('mini.surround').setup()
 
   local statusline = require 'mini.statusline'
@@ -216,12 +204,8 @@ do
         file_ignore_patterns = ignored_files,
       },
     },
-    extensions = {
-      ['ui-select'] = { require('telescope.themes').get_dropdown() },
-    },
   }
   pcall(require('telescope').load_extension, 'fzf')
-  pcall(require('telescope').load_extension, 'ui-select')
 
   local builtin = require 'telescope.builtin'
   vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
@@ -384,22 +368,9 @@ do
   vim.pack.add { 'https://github.com/stevearc/conform.nvim' }
   require('conform').setup {
     notify_on_error = false,
-    format_on_save = function(bufnr)
-      -- You can specify filetypes to autoformat on save here:
-      local enabled_filetypes = {
-        lua = true,
-        typescript = true,
-        html = true,
-        angular = true,
-        scss = true,
-      }
-
-      if enabled_filetypes[vim.bo[bufnr].filetype] then
-        return { timeout_ms = 1500 }
-      else
-        return nil
-      end
-    end,
+    format_on_save = {
+      timeout_ms = 1500,
+    },
     default_format_opts = {
       lsp_format = 'fallback', -- Use external formatters if configured below, otherwise use LSP formatting. Set to `false` to disable LSP formatting entirely.
     },
@@ -409,7 +380,6 @@ do
       html = { 'prettierd' },
       angular = { 'prettierd' },
       typescript = { 'prettierd', 'eslint_d' },
-      -- javascript = { "prettierd", "prettier", stop_after_first = true },
     },
   }
 
@@ -502,10 +472,9 @@ do
     if not vim.treesitter.language.add(language) then return end
     vim.treesitter.start(buf, language)
 
-    -- Enable treesitter based folds
-    -- For more info on folds see `:help folds`
-    -- vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
-    -- vim.wo.foldmethod = 'expr'
+    vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()' -- Enable treesitter based folds
+    vim.wo.foldmethod = 'expr'
+    vim.wo.foldlevel = 99
 
     local has_indent_query = vim.treesitter.query.get(language, 'indents') ~= nil
     if has_indent_query then vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()" end
@@ -573,17 +542,11 @@ do
   vim.keymap.set('n', '<leader>xQ', '<cmd>Trouble qflist toggle<cr>', { desc = 'Quickfix List (Trouble)' })
 
   vim.pack.add { 'https://github.com/stevearc/oil.nvim' }
-  require('oil').setup {
-    float = {
-      border = 'single',
-    },
-  }
+  require('oil').setup {}
   vim.keymap.set('n', '<leader>-', '<cmd>Oil --float<CR>', { desc = 'Quit All' })
 
   vim.pack.add { 'https://github.com/m4xshen/hardtime.nvim' }
-  require('hardtime').setup {
-    dependencies = { 'MunifTanjim/nui.nvim' },
-  }
+  require('hardtime').setup {}
 
   vim.pack.add { 'https://github.com/rcarriga/nvim-notify' }
   vim.o.termguicolors = true
