@@ -12,9 +12,7 @@ do
   vim.o.mouse = 'a'
   vim.o.showmode = false
 
-  -- Sync clipboard between OS and Neovim.
-  --  Schedule the setting after `UiEnter` because it can increase startup-time.
-  vim.schedule(function() vim.o.clipboard = 'unnamedplus' end)
+  vim.schedule(function() vim.o.clipboard = 'unnamedplus' end) -- Sync clipboard between OS and Neovim.
 
   vim.o.breakindent = true
   vim.o.undofile = true
@@ -590,10 +588,6 @@ do
   vim.pack.add { 'https://github.com/rcarriga/nvim-notify' }
   vim.o.termguicolors = true
   vim.notify = require 'notify'
-
-  vim.pack.add { 'https://github.com/kdheepak/lazygit.nvim' }
-  require('telescope').load_extension 'lazygit'
-  vim.keymap.set('n', '<leader>gg', '<cmd>LazyGit<CR>', { desc = 'LazyGit' })
 
   vim.pack.add { 'https://github.com/NeogitOrg/neogit' }
   require('neogit').setup {
