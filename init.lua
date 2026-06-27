@@ -139,12 +139,20 @@ do
     },
   }
 
-  vim.pack.add { 'https://github.com/neanias/everforest-nvim' }
-  require('everforest').setup {
-    background = 'soft',
-    ui_contrast = 'high',
+  -- vim.cmd.colorscheme 'everforest'
+  vim.o.background = 'light'
+  vim.pack.add {
+    'https://github.com/yorickpeterse/vim-paper',
+    'https://github.com/shaunsingh/solarized.nvim',
+    'https://github.com/kdheepak/monochrome.nvim',
+    'https://github.com/neanias/everforest-nvim',
+    'https://github.com/wtfox/jellybeans.nvim',
   }
-  vim.cmd.colorscheme 'everforest'
+  -- require('everforest').setup {
+  --   background = 'soft',
+  --   ui_contrast = 'high',
+  -- }
+  vim.cmd 'colorscheme jellybeans-light'
 
   vim.pack.add { 'https://github.com/folke/todo-comments.nvim' }
   require('todo-comments').setup {}
@@ -275,7 +283,7 @@ do
   )
 end
 
--- SECTION 5: LSP LSP keymaps, server configuration, Mason tools installations
+-- SECTION 5: LSP LSP keymaps, server configuration
 do
   -- `:help lsp-vs-treesitter`
   vim.pack.add { 'https://github.com/j-hui/fidget.nvim' }
@@ -330,26 +338,7 @@ do
 
   vim.pack.add {
     'https://github.com/neovim/nvim-lspconfig',
-    'https://github.com/mason-org/mason.nvim',
-    'https://github.com/mason-org/mason-lspconfig.nvim',
-    'https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim',
   }
-
-  -- Automatically install LSPs and related tools to stdpath for Neovim
-  require('mason').setup {}
-  ---@type table<string, vim.lsp.Config>
-  local servers = {
-    stylua = {},
-  }
-  local ensure_installed = vim.tbl_keys(servers or {})
-  -- You can add other tools here that you want Mason to install })
-  vim.list_extend(ensure_installed, {})
-  require('mason-tool-installer').setup { ensure_installed = ensure_installed }
-
-  for name, server in pairs(servers) do
-    vim.lsp.config(name, server)
-    vim.lsp.enable(name)
-  end
 
   vim.pack.add { 'https://github.com/pmizio/typescript-tools.nvim' }
   require('typescript-tools').setup {
