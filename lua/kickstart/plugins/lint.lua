@@ -6,6 +6,7 @@ local lint = require 'lint'
 lint.linters_by_ft = {
   typescript = { 'eslint_d' },
   markdown = { 'markdownlint' }, -- Make sure to install `markdownlint` via mason / npm
+  json = { 'jsonlint' },
 }
 
 -- To allow other plugins to add linters to require('lint').linters_by_ft,

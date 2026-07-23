@@ -1,11 +1,15 @@
 -- SECTION 1: FOUNDATION Core Neovim settings, leaders, options, basic keymaps, basic autocmds
 do
+  -- npm install -g @angular/language-server @fsouza/prettierd @johnnymorganz/stylua-bin emmet-ls eslint_d vscode-langservers-extracted jsonlint
+  -- brew install lua-language-server
   vim.loader.enable() -- Enable faster startup by caching compiled Lua modules
 
   vim.g.mapleader = ' '
   vim.g.maplocalleader = ' '
 
   vim.g.have_nerd_font = true
+
+  vim.o.termguicolors = true
 
   vim.o.number = true
   vim.o.relativenumber = true
@@ -93,11 +97,6 @@ do
       local kind = ev.data.kind
       if kind ~= 'install' and kind ~= 'update' then return end
 
-      if name == 'telescope-fzf-native.nvim' and vim.fn.executable 'make' == 1 then
-        run_build(name, { 'make' }, ev.data.path)
-        return
-      end
-
       if name == 'LuaSnip' then
         if vim.fn.has 'win32' ~= 1 and vim.fn.executable 'make' == 1 then
           run_build(name, { 'make', 'install_jsregexp' }, ev.data.path)
@@ -114,13 +113,12 @@ do
   })
 end
 
--- SECTION 3: UI / CORE UX PLUGINS guess-indent, gitsigns, which-key, colorscheme, todo-comments, mini modules
+-- SECTION 3: UI / CORE UX PLUGINS
 do
   vim.pack.add { 'https://github.com/NMAC427/guess-indent.nvim' }
   require('guess-indent').setup {}
 
-  vim.pack.add { 'https://github.com/lewis6991/gitsigns.nvim' }
-  require('gitsigns').setup { current_line_blame = true }
+  require 'kickstart.plugins.gitsigns' -- adds gitsigns recommended keymaps
 
   vim.pack.add { 'https://github.com/folke/which-key.nvim' }
   require('which-key').setup {
@@ -129,7 +127,6 @@ do
     spec = {
       { '<leader>s', group = '[S]earch', mode = { 'n', 'v' } },
       { '<leader>d', group = '[D]ebug/Document' },
-      { '<leader>g', group = '[G]it' },
       { '<leader>t', group = '[T]oggle' },
       { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } }, -- Enable gitsigns recommended keymaps first
       { 'gr', group = 'LSP Actions', mode = { 'n' } },
@@ -148,22 +145,32 @@ do
     'https://github.com/neanias/everforest-nvim',
     'https://github.com/wtfox/jellybeans.nvim',
   }
-  -- require('everforest').setup {
-  --   background = 'soft',
-  --   ui_contrast = 'high',
-  -- }
-  vim.cmd 'colorscheme jellybeans-light'
+  require('everforest').setup {
+    background = 'soft',
+    ui_contrast = 'high',
+  }
+
+  vim.o.background = 'light'
+  vim.cmd 'colorscheme sepia'
 
   vim.pack.add { 'https://github.com/folke/todo-comments.nvim' }
   require('todo-comments').setup {}
 
-  vim.pack.add { 'https://github.com/nvim-mini/mini.nvim' }
+  vim.pack.add { 'https://github.com/lukas-reineke/indent-blankline.nvim' }
+  require('ibl').setup {
+    indent = {
+      char = '┊',
+    },
+  }
 
+  vim.pack.add { 'https://github.com/windwp/nvim-autopairs' }
+  require('nvim-autopairs').setup {}
+
+  vim.pack.add { 'https://github.com/nvim-mini/mini.nvim' }
   if vim.g.have_nerd_font then
     require('mini.icons').setup()
     MiniIcons.mock_nvim_web_devicons() -- Used for backwards compatibility with plugins that require `nvim-web-devicons` (e.g. telescope.nvim)
   end
-
   require('mini.ai').setup {
     -- NOTE: Avoid conflicts with the built-in incremental selection mappings on Neovim>=0.12 (see `:help treesitter-incremental-selection`)
     mappings = {
@@ -172,26 +179,80 @@ do
     },
     n_lines = 500,
   }
-
   require('mini.surround').setup()
 
   local statusline = require 'mini.statusline'
   statusline.setup { use_icons = vim.g.have_nerd_font }
   statusline.section_location = function() return '%2l:%-2v' end
+
+  vim.pack.add { 'https://github.com/j-hui/fidget.nvim' }
+  require('fidget').setup {}
+
+  vim.pack.add { 'https://github.com/rcarriga/nvim-notify' }
+  vim.notify = require 'notify'
+
+  vim.pack.add { 'https://github.com/folke/snacks.nvim' }
+  require('snacks').setup {
+    bigfile = {
+      enabled = true,
+    },
+    input = {
+      enabled = true,
+    },
+  }
 end
 
 -- SECTION 4: SEARCH & NAVIGATION Telescope setup, keymaps, LSP picker mappings
 do
+  vim.pack.add { 'https://github.com/ibhagwan/fzf-lua' }
+  local kset = vim.keymap.set
+  local default_opts = { noremap = true, silent = true }
+  local function opts(extends)
+    local tbl = extends or {}
+    return vim.tbl_deep_extend('force', tbl, default_opts)
+  end
+  require('fzf-lua').setup {
+    'border-fused',
+    'telescope',
+    keymap = {
+      fzf = {
+        ['alt-a'] = 'select-all+accept',
+      },
+    },
+    defaults = {
+      formatter = { 'path.filename_first', 999 },
+    },
+    winopts = {
+      backdrop = 100,
+      fullscreen = true,
+    },
+    fzf_colors = {
+      ['gutter'] = '-1',
+    },
+  }
+  -- File navigation
+  kset('n', '<leader>sf', '<cmd>FzfLua files<CR>', opts { desc = 'Find files' })
+  kset('n', '<leader>sg', '<cmd>FzfLua live_grep<CR>', opts { desc = 'Grep files' })
+  kset('n', '<leader>,', '<cmd>FzfLua buffers sort_mru=true sort_lastused=true<CR>', opts { desc = 'Buffers' })
+
+  -- Search
+  kset('n', '<leader>sj', '<cmd>FzfLua jumps<CR>', opts { desc = 'Jumps' })
+  -- kset('n', '<leader>sr', function() FzfLua.resume() end, opts { desc = 'Resume search' })
+  kset('n', '<leader>sw', '<cmd>FzfLua grep_cword<CR>', opts { desc = 'Grep word under cursor' })
+  kset('n', '<leader>ss', '<cmd>FzfLua lsp_document_symbols<CR>', opts { desc = 'Document symbols' })
+  kset('n', '<leader>sS', '<cmd>FzfLua lsp_workspace_symbols<CR>', opts { desc = 'Workspace symbols' })
+  kset('n', '<leader>sd', '<cmd>FzfLua lsp_document_diagnostics<CR>', opts { desc = 'Document diagnostics' })
+  kset('n', '<leader>sD', '<cmd>FzfLua lsp_workspace_diagnostics<CR>', opts { desc = 'Workspace diagnostics' })
+  -- kset('n', '<leader>sq', gitsigns.setqflist, opts { desc = 'Show hunks in qf' })
+
   ---@type (string|vim.pack.Spec)[]
   local telescope_plugins = {
     'https://github.com/nvim-lua/plenary.nvim',
     'https://github.com/nvim-telescope/telescope.nvim',
     'https://github.com/nvim-telescope/telescope-ui-select.nvim',
   }
-  if vim.fn.executable 'make' == 1 then
-    table.insert(telescope_plugins, 'https://github.com/nvim-telescope/telescope-fzf-native.nvim')
-  end
   vim.pack.add(telescope_plugins)
+
   local ignored_files = { './^.git/*', './node_modules/*', 'node_modules', '^node_modules/*', 'node_modules/*' }
   require('telescope').setup {
     defaults = {
@@ -212,17 +273,21 @@ do
         file_ignore_patterns = ignored_files,
       },
     },
+    extensions = {
+      -- TODO: find out why without this telescope is showing code action in "search" dialog, not in "smaller dropdown one"
+      ['ui-select'] = { require('telescope.themes').get_dropdown() },
+    },
   }
-  pcall(require('telescope').load_extension, 'fzf')
+  pcall(require('telescope').load_extension, 'ui-select')
 
   local builtin = require 'telescope.builtin'
+  local fzf = require 'fzf-lua'
   vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
   vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
-  vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
   vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
-  vim.keymap.set({ 'n', 'v' }, '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
   vim.keymap.set({ 'n', 'v' }, '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord or selection' })
-  vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
+  -- vim.keymap.set('n', '<leader>sf', fzf.files, { desc = '[S]earch by [G]rep' })
+  -- vim.keymap.set('n', '<leader>sg', fzf.live_grep, { desc = '[S]earch by [G]rep' })
   vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
   vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
   vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
@@ -281,14 +346,48 @@ do
     function() builtin.find_files { cwd = vim.fn.stdpath 'config', follow = true } end,
     { desc = '[S]earch [N]eovim files' }
   )
+
+  -- vim.pack.add { 'https://github.com/MunifTanjim/nui.nvim' }
+  vim.pack.add { 'https://github.com/stevearc/oil.nvim' }
+  require('oil').setup {
+    float = {
+      border = 'single',
+    },
+  }
+  vim.keymap.set('n', '<leader>-', '<cmd>Oil --float<CR>', { desc = 'Quit All' })
+
+  vim.pack.add { 'https://github.com/smoka7/hop.nvim' }
+  require('hop').setup {
+    tag = '*', -- optional but strongly recommended
+    keys = 'etovxqpdygfblzhckisuran',
+
+    case_insensitive = false,
+    uppercase_labels = true,
+  }
+  vim.keymap.set('n', '\\', function() require('hop').hint_words() end, { remap = true })
+
+  vim.pack.add { 'https://github.com/folke/trouble.nvim' }
+  vim.keymap.set('n', '<leader>xx', '<cmd>Trouble diagnostics toggle<cr>', { desc = 'Diagnostics (Trouble)' })
+  vim.keymap.set(
+    'n',
+    '<leader>xX',
+    '<cmd>Trouble diagnostics toggle filter.buf=0<cr>',
+    { desc = 'Buffer Diagnostics (Trouble)' }
+  )
+  vim.keymap.set('n', '<leader>cs', '<cmd>Trouble symbols toggle focus=false<cr>', { desc = 'Symbols (Trouble)' })
+  vim.keymap.set(
+    'n',
+    '<leader>cl',
+    '<cmd>Trouble lsp toggle focus=false win.position=right<cr>',
+    { desc = 'LSP Definitions / references / ... (Trouble)' }
+  )
+  vim.keymap.set('n', '<leader>xL', '<cmd>Trouble loclist toggle<cr>', { desc = 'Location List (Trouble)' })
+  vim.keymap.set('n', '<leader>xQ', '<cmd>Trouble qflist toggle<cr>', { desc = 'Quickfix List (Trouble)' })
 end
 
 -- SECTION 5: LSP LSP keymaps, server configuration
 do
   -- `:help lsp-vs-treesitter`
-  vim.pack.add { 'https://github.com/j-hui/fidget.nvim' }
-  require('fidget').setup {}
-
   vim.api.nvim_create_autocmd('LspAttach', {
     group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
     callback = function(event)
@@ -497,50 +596,12 @@ end
 do
   require 'custom.plugins.init'
   require 'kickstart.plugins.debug'
-  require 'kickstart.plugins.indent_line'
   require 'kickstart.plugins.lint'
-  require 'kickstart.plugins.autopairs'
-  require 'kickstart.plugins.gitsigns' -- adds gitsigns recommended keymaps
-
-  vim.pack.add { 'https://github.com/smoka7/hop.nvim' }
-  require('hop').setup {
-    tag = '*', -- optional but strongly recommended
-    keys = 'etovxqpdygfblzhckisuran',
-
-    case_insensitive = false,
-    uppercase_labels = true,
-  }
-  vim.keymap.set('n', '\\', function() require('hop').hint_words() end, { remap = true })
-
-  vim.pack.add { 'https://github.com/folke/trouble.nvim' }
-  vim.keymap.set('n', '<leader>xx', '<cmd>Trouble diagnostics toggle<cr>', { desc = 'Diagnostics (Trouble)' })
-  vim.keymap.set(
-    'n',
-    '<leader>xX',
-    '<cmd>Trouble diagnostics toggle filter.buf=0<cr>',
-    { desc = 'Buffer Diagnostics (Trouble)' }
-  )
-  vim.keymap.set('n', '<leader>cs', '<cmd>Trouble symbols toggle focus=false<cr>', { desc = 'Symbols (Trouble)' })
-  vim.keymap.set(
-    'n',
-    '<leader>cl',
-    '<cmd>Trouble lsp toggle focus=false win.position=right<cr>',
-    { desc = 'LSP Definitions / references / ... (Trouble)' }
-  )
-  vim.keymap.set('n', '<leader>xL', '<cmd>Trouble loclist toggle<cr>', { desc = 'Location List (Trouble)' })
-  vim.keymap.set('n', '<leader>xQ', '<cmd>Trouble qflist toggle<cr>', { desc = 'Quickfix List (Trouble)' })
-
-  vim.pack.add { 'https://github.com/stevearc/oil.nvim' }
-  require('oil').setup {}
-  vim.keymap.set('n', '<leader>-', '<cmd>Oil --float<CR>', { desc = 'Quit All' })
 
   vim.pack.add { 'https://github.com/m4xshen/hardtime.nvim' }
   require('hardtime').setup {}
 
-  vim.pack.add { 'https://github.com/rcarriga/nvim-notify' }
-  vim.o.termguicolors = true
-  vim.notify = require 'notify'
-
+  vim.pack.add { 'https://github.com/sindrets/diffview.nvim' }
   vim.pack.add { 'https://github.com/NeogitOrg/neogit' }
   require('neogit').setup {
     dependencies = {
@@ -555,11 +616,11 @@ do
       disable_line_numbers = false,
       disable_relative_line_numbers = false,
     },
+    integrations = {
+      diffview = true, -- enable the diffview integration
+    },
   }
   vim.keymap.set('n', '<leader>gn', '<cmd>Neogit<CR>', { desc = 'Neogit' })
-
-  vim.pack.add { 'https://github.com/LunarVim/bigfile.nvim' }
-  require('bigfile').setup { filesize = 10 }
 
   -- { -- Copilot
   --   'CopilotC-Nvim/CopilotChat.nvim',

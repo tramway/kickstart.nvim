@@ -5,6 +5,7 @@
 vim.pack.add { 'https://github.com/lewis6991/gitsigns.nvim' }
 
 require('gitsigns').setup {
+  current_line_blame = true,
   on_attach = function(bufnr)
     local gitsigns = require 'gitsigns'
 
@@ -52,7 +53,23 @@ require('gitsigns').setup {
     map('n', '<leader>hR', gitsigns.reset_buffer, { desc = 'git [R]eset buffer' })
     map('n', '<leader>hp', gitsigns.preview_hunk, { desc = 'git [p]review hunk' })
     map('n', '<leader>hi', gitsigns.preview_hunk_inline, { desc = 'git preview hunk [i]nline' })
-    map('n', '<leader>hb', function() gitsigns.blame {} end, { desc = 'git [b]lame' })
+    map('n', '<leader>hb', function()
+      for _, win in ipairs(vim.api.nvim_list_wins()) do
+        local buf = vim.api.nvim_win_get_buf(win)
+
+        if buf and vim.bo[buf].filetype == 'gitsigns-blame' then
+          if not pcall(vim.api.nvim_win_close, win, true) then pcall(vim.api.nvim_buf_delete, buf, {}) end
+
+          return
+        end
+      end
+
+      local cur_win = vim.api.nvim_get_current_win()
+      require('gitsigns').blame()
+
+      -- Switch focus back to the original window
+      if vim.api.nvim_get_current_win() ~= cur_win then vim.api.nvim_set_current_win(cur_win) end
+    end, { desc = 'git [b]lame' })
     map('n', '<leader>hB', function() gitsigns.blame_line { full = true } end, { desc = 'git [b]lame line' })
     map('n', '<leader>hd', gitsigns.diffthis, { desc = 'git [d]iff against index' })
     map('n', '<leader>hD', function() gitsigns.diffthis '@' end, { desc = 'git [D]iff against last commit' })
