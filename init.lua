@@ -151,7 +151,7 @@ do
   }
 
   vim.o.background = 'light'
-  vim.cmd 'colorscheme sepia'
+  -- vim.cmd 'colorscheme sepia'
 
   vim.pack.add { 'https://github.com/folke/todo-comments.nvim' }
   require('todo-comments').setup {}
