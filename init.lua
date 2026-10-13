@@ -1,7 +1,8 @@
 -- SECTION 1: FOUNDATION Core Neovim settings, leaders, options, basic keymaps, basic autocmds
 do
   -- npm install -g @angular/language-server @fsouza/prettierd @johnnymorganz/stylua-bin emmet-ls eslint_d vscode-langservers-extracted jsonlint typescript
-  -- brew install lua-language-server tree-sitter-cli
+  -- brew install lua-language-server tree-sitter-cli hadolint
+
   vim.loader.enable() -- Enable faster startup by caching compiled Lua modules
 
   vim.g.mapleader = ' '
@@ -449,6 +450,7 @@ do
   vim.lsp.enable 'luals'
   vim.lsp.enable 'html'
   vim.lsp.enable 'emmetls'
+  vim.lsp.enable 'hadolint'
 end
 
 -- SECTION 6: FORMATTING conform.nvim setup and keymap
