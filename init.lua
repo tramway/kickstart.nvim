@@ -439,11 +439,6 @@ do
     'https://github.com/neovim/nvim-lspconfig',
   }
 
-  vim.pack.add { 'https://github.com/pmizio/typescript-tools.nvim' }
-  require('typescript-tools').setup {
-    dependencies = { 'nvim-lua/plenary.nvim' },
-  }
-
   vim.lsp.enable 'angularls'
   vim.lsp.enable 'tsc'
   vim.lsp.enable 'cssls'
